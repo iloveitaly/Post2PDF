@@ -335,10 +335,12 @@ function AddPage($orientation='', $format='')
 		$this->_out($fc);
 	$this->TextColor=$tc;
 	$this->ColorFlag=$cf;
+	
 	//Page header
 	$this->InHeader=true;
 	$this->Header();
 	$this->InHeader=false;
+	
 	//Restore line width
 	if($this->LineWidth!=$lw)
 	{
@@ -615,6 +617,7 @@ function AcceptPageBreak()
 function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
 {
 	//Output a cell
+	
 	$k=$this->k;
 	if($this->y+$h>$this->PageBreakTrigger && !$this->InHeader && !$this->InFooter && $this->AcceptPageBreak())
 	{
@@ -634,9 +637,16 @@ function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link
 			$this->_out(sprintf('%.3F Tw',$ws*$k));
 		}
 	}
-	if($w==0)
-		$w=$this->w-$this->rMargin-$this->x;
+	
+	if($w == 0) {
+		$w = $this->w - $this->rMargin - $this->x;
+	}
+
 	$s='';
+	
+	// echo $txt."<br/>";
+	// echo $this->x."<br/>";
+	
 	if($fill || $border==1)
 	{
 		if($fill)
@@ -645,6 +655,7 @@ function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link
 			$op='S';
 		$s=sprintf('%.2F %.2F %.2F %.2F re %s ',$this->x*$k,($this->h-$this->y)*$k,$w*$k,-$h*$k,$op);
 	}
+	
 	if(is_string($border))
 	{
 		$x=$this->x;
@@ -658,28 +669,38 @@ function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link
 		if(strpos($border,'B')!==false)
 			$s.=sprintf('%.2F %.2F m %.2F %.2F l S ',$x*$k,($this->h-($y+$h))*$k,($x+$w)*$k,($this->h-($y+$h))*$k);
 	}
-	if($txt!=='')
-	{
-		if($align=='R')
-			$dx=$w-$this->cMargin-$this->GetStringWidth($txt);
-		elseif($align=='C')
-			$dx=($w-$this->GetStringWidth($txt))/2;
-		else
+	
+	if($txt!=='') {
+		// echo "Print: ".$txt."($link)<br/>";
+		if($align=='R') {
+			$dx = $w-$this->cMargin-$this->GetStringWidth($txt);
+		} else if($align=='C') {
+			$dx = ($w - $this->GetStringWidth($txt)) / 2;
+		} else {
 			$dx=$this->cMargin;
+		}
+		
 		if($this->ColorFlag)
 			$s.='q '.$this->TextColor.' ';
+			
 		$txt2=str_replace(')','\\)',str_replace('(','\\(',str_replace('\\','\\\\',$txt)));
 		$s.=sprintf('BT %.2F %.2F Td (%s) Tj ET',($this->x+$dx)*$k,($this->h-($this->y+.5*$h+.3*$this->FontSize))*$k,$txt2);
+		
 		if($this->underline)
 			$s.=' '.$this->_dounderline($this->x+$dx,$this->y+.5*$h+.3*$this->FontSize,$txt);
+			
 		if($this->ColorFlag)
 			$s.=' Q';
+			
 		if($link)
 			$this->Link($this->x+$dx,$this->y+.5*$h-.5*$this->FontSize,$this->GetStringWidth($txt),$this->FontSize,$link);
 	}
+	
 	if($s)
 		$this->_out($s);
+		
 	$this->lasth=$h;
+	
 	if($ln>0)
 	{
 		//Go to next line
@@ -1005,6 +1026,7 @@ function Output($name='', $dest='')
 		else
 			$dest='F';
 	}
+
 	switch($dest)
 	{
 		case 'I':

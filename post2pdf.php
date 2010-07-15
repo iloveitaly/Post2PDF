@@ -34,8 +34,9 @@ function post_to_pdf($content){
     {
        $siteurl = get_option("siteurl");
        $id = $wp_query->post->ID;
-       $temp = eregi_replace("##SITEURL##",$siteurl, $html_post_code);        
-       $temp = eregi_replace("##GLOBALID##",$id ,$temp);
+
+       $temp = str_replace("##SITEURL##",$siteurl, $html_post_code);        
+       $temp = str_replace("##GLOBALID##",$id ,$temp);
        $check = eregi($export_tag, $content);
        if(!$default_post_action)
        {
